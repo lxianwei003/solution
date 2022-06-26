@@ -1,7 +1,5 @@
 # solution
 
-# 说明
-
 # question1 是问题1的答案
 answer.ipynb 是答案内容主体
 # question2 是问题2的答案 

@@ -128,8 +128,8 @@ def _logistic_loss_and_grad(w, X, y, alpha, penalty, fit_intercept,
     return out, grad
 
 
-def _fit_lbfgs_lxw(penalty, tol, C, fit_intercept,fix_initial, max_iter, l1_ratio,
-               warm_start_coef, verbose, X, y, sample_weight, bounds=None,constraints=None,method=None):
+def _fit_lxw(penalty, tol, C, fit_intercept,fix_initial, max_iter, l1_ratio
+             , verbose, X, y, sample_weight, bounds=None,constraints=None,method=None):
 
     m, n = X.shape
 
@@ -150,20 +150,15 @@ def _fit_lbfgs_lxw(penalty, tol, C, fit_intercept,fix_initial, max_iter, l1_rati
             w0 = np.full(n+int(fit_intercept),0.1)
         args = (X, y_bin, 1. / C, penalty, fit_intercept, sample_weight)
 
-    if warm_start_coef is not None:
-        w0 = warm_start_coef
-    print('w0 {}'.format(w0))
-    # print('warm_start_coef {}'.format(warm_start_coef))
-    # options = {"disp": verbose, "gtol": tol, "maxiter": max_iter}
     options = {"disp": verbose, "maxiter": max_iter}
 
     # print('w0 {} {}'.format(w0.shape,w0))
     # print('constraints {} {}'.format(constraints,constraints.A.shape))
-    if method=="trust-constr":
-        res = minimize(
-            func, w0, method=method, jac=True,
-            bounds=bounds, args=args,options=options,constraints=constraints)
-    # if method=='SLSQP':
+    # if method=="trust-constr":
+    #     res = minimize(
+    #         func, w0, method=method, jac=True,
+    #         bounds=bounds, args=args,options=options,constraints=constraints)
+    # # if method=='SLSQP':
     res = minimize(
         func, w0, method=method, jac=True,
         bounds=bounds, args=args,options=options, constraints=constraints)
@@ -384,30 +379,25 @@ class LogisticRegression(BaseEstimator, LinearClassifierMixin,
                 class_weight=self.class_weight, classes=self.classes_, y=y)
             sample_weight *= class_weight_[le.fit_transform(y)]
 
-        if self.warm_start:
-            warm_start_coef = getattr(self, 'coef_', None)
-        else:
-            warm_start_coef = None
-        if warm_start_coef is not None and self.fit_intercept:
-            warm_start_coef = np.append(warm_start_coef,
-                                        self.intercept_[:, np.newaxis],
-                                        axis=1)
+        # if self.warm_start:
+        #     warm_start_coef = getattr(self, 'coef_', None)
+        # else:
+        #     warm_start_coef = None
+        # if warm_start_coef is not None and self.fit_intercept:
+        #     warm_start_coef = np.append(warm_start_coef,
+        #                                 self.intercept_[:, np.newaxis],
+        #                                 axis=1)
 
-        if self.solver == "ecos":
-            print('')
-            # coef_, intercept_ = _fit_ecos(
-            #     self.penalty, self.tol, self.C, self.fit_intercept,
-            #     self.max_iter, self.l1_ratio, warm_start_coef, self.verbose,
-            #     X, y, sample_weight, bounds, constraints)
-        elif self.solver == 'lxw':
-            coef_,intercept_,res = _fit_lbfgs_lxw(
+
+        if self.solver == 'lxw':
+            coef_,intercept_,res = _fit_lxw(
                 self.penalty, self.tol, self.C, self.fit_intercept,self.fix_initial,
-                self.max_iter, self.l1_ratio, warm_start_coef, self.verbose,
+                self.max_iter, self.l1_ratio, self.verbose,
                 X, y, sample_weight, bounds,constraints,method)
         else:
             coef_, intercept_ = _fit_lbfgs(
                 self.penalty, self.tol, self.C, self.fit_intercept,
-                self.max_iter, self.l1_ratio, warm_start_coef, self.verbose,
+                self.max_iter, self.l1_ratio, self.verbose,
                 X, y, sample_weight, bounds)
 
         self.coef_ = np.asarray([coef_])

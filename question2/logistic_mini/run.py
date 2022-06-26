@@ -1,130 +1,14 @@
 
 
-
-
-
-
 # coding : utf-8
+
 from sklearn.datasets import load_breast_cancer
 from scipy.optimize import LinearConstraint
 
-import numpy as np
 from scipy.optimize import Bounds
 import numpy as np
 from logistic_mini import LogisticRegression
 
-
-def fun3():
-
-    from scipy.optimize import LinearConstraint
-    X, y = load_breast_cancer(return_X_y=True)
-    print('X {}'.format(X.shape))
-    lb = np.zeros((X.shape[1]))
-    # lb = np.r_[np.zeros(X.shape[1]-1),0]
-    # ub = np.r_[np.full(X.shape[1]-1,np.inf), np.inf]
-    ub = np.full(X.shape[1],np.inf)
-
-    bounds = Bounds(lb, ub)
-    print('lb {}'.format(lb.shape))
-    print('un {}'.format(ub.shape))
-    A = np.zeros((X.shape[1],X.shape[1]+1))
-    print('A {} '.format(A.shape))
-    print('X.s {}'.format(X.shape[1]))
-    for i in range(X.shape[1]):
-        A[i,i:i+2] = np.array([-1,1])
-        # print('A {}'.format(A))
-    print('A {} {}'.format(A.shape,A[-1,-1]))
-
-    constraints = LinearConstraint(A,lb,ub)
-
-
-    clf = LogisticRegression(solver="ecos", penalty="elasticnet",l1_ratio=0.5)
-    clf.fit(X, y,constraints=constraints)
-
-    print('score {}'.format(clf.score(X, y)))
-    print('intercept {}'.format(clf.intercept_))
-    print('coef_ {}'.format(clf.coef_))
-    # coef_[[-0.18136544 - 0.18136544 - 0.00501176 - 0.00501176 - 0.00501177 - 0.00501177
-    #        - 0.00501178 - 0.00501178 - 0.00501179 - 0.00501179 - 0.00501179 - 0.0050118
-    #        - 0.0050118 - 0.0050118 - 0.00501181 - 0.00501181 - 0.00501182 - 0.00501182
-    #        - 0.00501183 - 0.00501183 - 0.00501184 - 0.00501184 - 0.00501184 - 0.00501184
-    #        - 0.00501185 - 0.00501185 - 0.00501185 - 0.00501184 - 0.00501183 - 0.00501173]]
-    # #
-    # X(569, 30)
-    # lb(30, )
-    # un(30, )
-    # A(30, 31)
-    # X.s
-    # 30
-    # A(30, 31)
-    # 1.0
-    # score
-    # 0.9209138840070299
-    # intercept[15.251803]
-
-    clf = LogisticRegression(solver="ecos", penalty="l1")
-    clf.fit(X, y, constraints=constraints)
-
-    print('score {}'.format(clf.score(X, y)))
-    print('intercept {}'.format(clf.intercept_))
-    print('coef_ {}'.format(clf.coef_))
-    # score
-    # 0.9191564147627417
-    # intercept[15.20015283]
-    # coef_[[-0.18000882 - 0.18000882 - 0.00500848 - 0.00500848 - 0.00500849 - 0.00500849
-    #        - 0.00500849 - 0.0050085 - 0.0050085 - 0.00500851 - 0.00500851 - 0.00500851
-    #        - 0.00500852 - 0.00500852 - 0.00500852 - 0.00500853 - 0.00500853 - 0.00500854
-    #        - 0.00500854 - 0.00500854 - 0.00500855 - 0.00500855 - 0.00500855 - 0.00500855
-    #        - 0.00500855 - 0.00500856 - 0.00500856 - 0.00500855 - 0.00500853 - 0.00500795]]
-
-    clf = LogisticRegression(solver="ecos", penalty="l2")
-    clf.fit(X, y, constraints=constraints)
-
-    print('score {}'.format(clf.score(X, y)))
-    print('intercept {}'.format(clf.intercept_))
-    print('coef_ {}'.format(clf.coef_))
-    # score
-    # 0.9209138840070299
-    # intercept[15.30357001]
-    # coef_[[-0.18272197 - 0.18272197 - 0.00501515 - 0.00501515 - 0.00501515 - 0.00501515
-    #        - 0.00501515 - 0.00501515 - 0.00501516 - 0.00501516 - 0.00501516 - 0.00501516
-    #        - 0.00501516 - 0.00501516 - 0.00501516 - 0.00501516 - 0.00501517 - 0.00501517
-    #        - 0.00501517 - 0.00501517 - 0.00501517 - 0.00501517 - 0.00501517 - 0.00501517
-    #        - 0.00501517 - 0.00501518 - 0.00501518 - 0.00501517 - 0.00501517 - 0.00501515]]
-def fun4():
-    from clogistic import LogisticRegression
-    from scipy.optimize import LinearConstraint
-    X,y= load_breast_cancer(return_X_y=True)
-    lb = np.array([0.0])
-    ub = np.array([0.5])
-    a = np.array([[-1,2]])
-    print('a {}'.format(a.shape))
-    print('lb {}'.format(lb.shape))
-    print('ub {}'.format(ub.shape))
-
-    A = np.zeros((1,X.shape[1]+1))
-    A[0,:2] = np.array([-1,1])
-
-    print('A {}'.format(A.shape))
-    constraints = LinearConstraint(A,lb,ub)
-    clf = LogisticRegression(solver='ecos',penalty='elasticnet',l1_ratio=0.5)
-    clf.fit(X,y,constraints=constraints)
-    print('coef_ {}'.format(clf.coef_))
-    print('clf.intercept_ {}'.format(clf.intercept_))
-
-    # a(1, 2)
-    # lb(1, )
-    # ub(1, )
-    # A(1, 31)
-    # coef_[[-2.60422355e-01  2.39577652e-01 - 1.92012495e-01  2.90666809e-02
-    #        - 3.97370760e-08 - 7.16334693e-08 - 2.33698014e-01 - 9.86651029e-08
-    #        - 7.46276071e-08 - 7.02667735e-09 - 1.55098920e-08  1.42995024e+00
-    #        4.09734138e-08 - 1.08592016e-01 - 4.97863432e-09  8.06378661e-09
-    #        - 1.08950790e-08 - 7.51201540e-09 - 8.62403097e-09  1.75870056e-09
-    #        8.35103279e-08 - 4.84664844e-01 - 1.00378366e-01 - 1.14688678e-02
-    #        - 1.56122189e-07 - 5.95038188e-01 - 2.09885806e+00 - 2.82823803e-01
-    #        - 5.77869754e-01 - 2.10321102e-08]]
-    # clf.intercept_[34.3868653]
 
 
 def logistic_reg():
@@ -142,7 +26,7 @@ def logistic_reg():
     print('penalty : {}'.format(clf.penalty))
 
     print('score : {}'.format(clf.score(X, y)))
-    print('coef_  : {}'.format(clf.coef_))
+    print('coef_  : {}\n'.format(clf.coef_))
 
     # == == == == == == == == == == = lbfgs == == == == == =
     # max_iter: 10000
@@ -211,7 +95,7 @@ def Non_negative_cons():
 
     print('score : {}'.format(clf.score(X, y)))
     print('coef_  : {}'.format(clf.coef_))
-    print('res: {}  optimizer : {}'.format(method, clf.res.success))
+    print('res: {}  optimizer : {}\n'.format(method, clf.res.success))
 
     # L-BFGS-B 迭代 50、60次，参数相同，有最优解，
     # == == == == == == == == == == = L - BFGS - B == == == == == =
@@ -351,7 +235,7 @@ def order_cons():
 
     print('score : {}'.format(clf.score(X, y)))
     print('coef_  : {}'.format(clf.coef_))
-    print('res: {}  optimizer : {}'.format(method, clf.res.success))
+    print('res: {}  optimizer : {}\n'.format(method, clf.res.success))
 
     # == == == == == == == == == == = trust - constr == == == == == =
     # max_iter: 225
